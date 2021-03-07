@@ -1,0 +1,132 @@
+<script>
+    //create data
+    $('#save_btn').click(function(e){
+        e.preventDefault();
+        console.log('Clicked');
+
+        var name = $('#name_input').val();
+        var age = $('#age_input').val();
+        var address = $('#address_input').val();
+        var csrf = $('input[name=csrfmiddlewaretoken]').val();
+
+        my_data = {
+            name:name,
+            age:age,
+            address:address,
+            csrfmiddlewaretoken: csrf,
+        }
+
+        $.ajax({
+            url: "{% url 'save' %}",
+            method: "POST",
+            data: my_data,
+            dataType: 'json',
+            success: function(data){
+                if(data.status == 'success'){
+                    console.log('done yo');
+                    console.log(data.st_data)
+                    $('#add_form').trigger('reset');
+
+                    var output;
+                    output = "<tr style='font-weight:500;'><td>"+data.st_data.name+"</td><td>"+data.st_data.age+"</td><td>"+data.st_data.address+"</td><td><input type='button' value='Edit' class='btn btn-primary btn-sm mr-1 edit_btn' data-sid='"+data.st_data.id+"'><input type='button' value='Delete' class='btn btn-danger btn-sm dlt_btn' data-sid='"+data.st_data.id+"'></td></tr>"
+
+                    $('#st_tbody').append(output);
+                    $('#save_info').show("slow").delay('4000').hide("slow");
+                }
+                else{
+                    console.log('Fail oh no');
+                }
+            }
+        })
+    })
+
+
+    //delete data
+    $('tbody').on('click','.dlt_btn',function(){
+        var id = $(this).attr('data-sid');
+        console.log('clicked dlt button..Id='+id);
+
+        my_data = {
+            sid: id,
+        }
+        var mythis = this;
+
+        $.ajax({
+            url: "{% url 'delete' %}",
+            method: "GET",
+            data:my_data,
+            success: function(data){
+                if(data.status == 'success'){
+                    $(mythis).closest('tr').fadeOut("slow");
+                    $('#delete_info').show("slow").delay('4000').hide("slow");
+                }
+            }
+        })
+    })
+
+    //Edit Data
+    $('tbody').on('click','.edit_btn',function(){
+        console.log('edit btn clicked');
+        var id = $(this).attr('data-sid')
+        var mythis = this;
+        my_data = {
+            sid:id,
+        }
+
+        $.ajax({
+            url : "{% url 'edit' %}",
+            method: "GET",
+            data: my_data,
+            success: function(data){
+                $('#add_update').text('Update Student Information');
+                $('#save_btn').hide();
+                $('#edit_btn').show();
+                $('#id_input').val(data.id);
+                $('#name_input').val(data.name);
+                $('#age_input').val(data.age);
+                $('#address_input').val(data.address);
+
+            }
+        })
+    })
+
+    //edit data
+    $('#edit_btn').click(function(e){
+        e.preventDefault();
+        console.log('Clicked Edit');
+
+        var id = $('#id_input').val();
+        var name = $('#name_input').val();
+        console.log(name)
+        var age = $('#age_input').val();
+        var address = $('#address_input').val();
+        var csrf = $('input[name=csrfmiddlewaretoken]').val();
+
+        my_data = {
+            id:id,
+            name:name,
+            age:age,
+            address:address,
+            csrfmiddlewaretoken: csrf,
+        }
+
+        $.ajax({
+            url: "{% url 'edit' %}",
+            method: "POST",
+            data:my_data,
+            success: function(data){
+                console.log(data.id);
+                var updated_tr = $('tbody').find('input[data-sid='+data.id+']').closest('tr');
+                output = "<td>"+data.name+"</td><td>"+data.age+"</td><td>"+data.address+"</td><td><input type='button' value='Edit' class='btn btn-primary btn-sm mr-1 edit_btn' data-sid='"+data.id+"'><input type='button' value='Delete' class='btn btn-danger btn-sm dlt_btn' data-sid='"+data.id+"'></td>"
+
+                $(updated_tr).html(output);
+                $('#add_form').trigger('reset');
+                $('#save_btn').show();
+                $('#edit_btn').hide();
+                $('#add_update').text('Add Student Information');
+                $('#edit_info').show("slow").delay('4000').hide("slow");
+
+            }
+        })
+    })
+</script>

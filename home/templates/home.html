@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Ajax CRUD</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body class="bg-dark">
+    <div class="container pt-4">
+        <h3 class="text-center alert alert-danger">Django Ajax CRUD</h3>
+        <div class="row">
+            <div class="col-lg-5">
+                <h5 class="text-center alert alert-info" id="add_update">Add Student Information</h5>
+                <form action="" method="POST" class="text-light" id="add_form">
+                    {% csrf_token %}
+                    <input type="hidden" name="sid" id="id_input">
+                    {{form}}
+                    <input type="submit" value="Save" class="btn btn-success mt-2" id="save_btn">
+                    <input type="submit" value="Edit" class="btn btn-primary mt-2" id="edit_btn" style="display: none;">
+                </form>
+                <h5 id='edit_info' style="display: none;" class="text-center alert alert-primary mt-2">Successfully Edited</h5>
+                <h5 id='save_info' style="display: none;" class="text-center alert alert-success mt-2">Successfully Saved</h5>
+                <h5 id='delete_info' style="display: none;" class="text-center alert alert-danger mt-2">Successfully Deleted</h5>
+            </div>
+            <div class="col-lg-7">
+                <h5 class="text-center alert alert-info">Students Information</h5>
+                <table class="table table-success table-hover">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Address</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="st_tbody">
+                    {% for student in students %}
+                      <tr style="font-weight: 500;">
+                        <td>{{student.name}}</td>
+                        <td>{{student.age}}</td>
+                        <td>{{student.address}}</td>
+                        <td>
+                            <input type="button" value="Edit" class="btn btn-primary btn-sm edit_btn" data-sid="{{student.id}}">
+                            <input type="button" value="Delete" class="btn btn-danger btn-sm dlt_btn" data-sid="{{student.id}}">
+                        </td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+    {% include "ajax.html" %}
+</body>
+</html>
